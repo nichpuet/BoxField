@@ -17,13 +17,17 @@ namespace BoxField
 
         //used to draw boxes on screen
         SolidBrush boxBrush = new SolidBrush(Color.White);
-        
-        //TODO - create a list to hold a column of boxes        
 
+        // - create a list to hold a column of boxes        
+        List<box> boxLeft = new List<box>();
+        List<box> boxRight = new List<box>();
+
+        int counter = 0;
 
         public GameScreen()
         {
             InitializeComponent();
+            OnStart();
         }
 
         /// <summary>
@@ -32,6 +36,10 @@ namespace BoxField
         public void OnStart()
         {
             //TODO - set game start values
+            box newBox = new box(25, 25, 20);
+            box thirdBox = new box(200, 25, 20);
+            boxLeft.Add(newBox);
+            boxRight.Add(thirdBox);
         }
 
         private void GameScreen_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
@@ -64,18 +72,49 @@ namespace BoxField
 
         private void gameLoop_Tick(object sender, EventArgs e)
         {
-            //TODO - update location of all boxes (drop down screen)
+            // - update location of all boxes (drop down screen)
+            foreach (box b in boxLeft)
+            {
+                b.y = b.y + 5;
+            }
+            foreach(box b in boxRight)
+            {
+                b.y = b.y + 5;
+            }
+            // - remove box if it has gone of screen
+            if (boxLeft[0].y > this.Height - 50)
+            {
+                boxLeft.RemoveAt(0);
+                boxRight.RemoveAt(0);
+            }
 
-            //TODO - remove box if it has gone of screen
+            // - add new box if it is time
+            counter++;
+            if(counter == 8)
+            {
+                box anotherBox = new box(25, 25, 20);
+                boxLeft.Add(anotherBox);
+                box fourthBox = new box(200, 25, 20);
+                boxRight.Add(fourthBox);
+                counter = 0;
+            }
 
-            //TODO - add new box if it is time
 
             Refresh();
         }
 
         private void GameScreen_Paint(object sender, PaintEventArgs e)
         {
-            //TODO - draw boxes to screen
+            
+            // - draw boxes to screen
+            for (int i = 0; i < boxLeft.Count(); i++)
+            {
+                e.Graphics.FillRectangle(boxBrush, boxLeft[i].x, boxLeft[i].y, boxLeft[i].size, boxLeft[i].size);
+            }
+            foreach(box b in boxRight)
+            {
+                e.Graphics.FillRectangle(boxBrush, b.x, b.y, b.size, b.size);
+            }
         }
     }
 }
