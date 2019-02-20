@@ -16,7 +16,7 @@ namespace BoxField
         Boolean leftArrowDown, rightArrowDown;
 
         //used to draw boxes on screen
-        SolidBrush boxBrush = new SolidBrush(Color.White);
+
 
         // - create a list to hold a column of boxes        
         List<box> boxLeft = new List<box>();
@@ -35,7 +35,7 @@ namespace BoxField
         /// </summary>
         public void OnStart()
         {
-            //TODO - set game start values
+            // - set game start values
             box newBox = new box(25, 25, 20);
             box thirdBox = new box(200, 25, 20);
             boxLeft.Add(newBox);
@@ -90,8 +90,10 @@ namespace BoxField
 
             // - add new box if it is time
             counter++;
+
             if(counter == 8)
             {
+               
                 box anotherBox = new box(25, 25, 20);
                 boxLeft.Add(anotherBox);
                 box fourthBox = new box(200, 25, 20);
@@ -105,7 +107,8 @@ namespace BoxField
 
         private void GameScreen_Paint(object sender, PaintEventArgs e)
         {
-            
+            SolidBrush boxBrush = new SolidBrush(Color.White);
+            Random randGen = new Random();
             // - draw boxes to screen
             for (int i = 0; i < boxLeft.Count(); i++)
             {
