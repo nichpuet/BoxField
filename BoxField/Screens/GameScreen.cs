@@ -21,10 +21,10 @@ namespace BoxField
         // - create a list to hold a column of boxes        
         List<box> boxLeft = new List<box>();
         List<box> boxRight = new List<box>();
-        List<CollisionBox> colBoxLeft = new List<CollisionBox>();
-        List<CollisionBox> colBoxRight = new List<CollisionBox>();
+       
+        box player;
 
-        int counter = 0;
+        int counter = 0, counter2 = 0, counter3 = 0;
 
         public GameScreen()
         {
@@ -40,13 +40,11 @@ namespace BoxField
             // - set game start values
             box newBox = new box(25, 25, 20);
             box thirdBox = new box(200, 25, 20);
-            CollisionBox newColBox = new CollisionBox(25, 25, 20);
-            CollisionBox secondColBox = new CollisionBox(200, 25, 20);
+           
             boxLeft.Add(newBox);
             boxRight.Add(thirdBox);
-            colBoxLeft.Add(newColBox);
-            colBoxRight.Add(secondColBox);
-
+           
+            player = new box(120, this.Height - 75, 25);
         }
 
         private void GameScreen_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
@@ -80,29 +78,64 @@ namespace BoxField
         private void gameLoop_Tick(object sender, EventArgs e)
         {
             #region down
+            int downSpeed = 5;
+
             // - update location of all boxes (drop down screen)
             foreach (box b in boxLeft)
             {
-                b.y = b.y + 5;
-            }
-            foreach (CollisionBox c in colBoxLeft)
-            {
-                c.y = c.y + 5;
-            }
+                b.boxMove(downSpeed);            }
+            
             foreach(box b in boxRight)
             {
-                b.y = b.y + 5;
+                b.boxMove(downSpeed);
             }
-            foreach(CollisionBox c in colBoxRight)
-            {
-                c.y = c.y + 5;
-            }
+
             #endregion
 
             #region sidetoside
 
+            counter2++;
 
+            if (counter2 == 16)
+            {
+                if (counter3%5 == 0)
+                {
+                    foreach(box b in boxLeft.Union(boxRight))
+                    {
+                        b.boxMove("left", 15);
+                    }
+                }
+                else
+                {
+                    foreach(box b in boxLeft.Union(boxRight))
+                    {
+                        b.boxMove("right", 15);
+                    }
+                }
+                counter3++;
+                counter2 = 0;
+            }
 
+            #endregion
+
+            #region player movement
+            if (leftArrowDown)
+            {
+                player.boxMove("left", 5);
+            }
+
+            if (rightArrowDown)
+            {
+                player.boxMove("right", 5);
+            }
+
+            foreach (box b in boxLeft.Union(boxRight))
+            {
+                if (player.Collision(b))
+                {
+                    gameLoop.Stop();
+                }
+            }
             #endregion
 
             #region remove
@@ -112,13 +145,11 @@ namespace BoxField
                 boxLeft.RemoveAt(0);
                 boxRight.RemoveAt(0);
             }
-            if(colBoxLeft[0].y > this.Height - 50)
-            {
-                colBoxLeft.RemoveAt(0);
-                colBoxRight.RemoveAt(0);
-            }
+
 
             #endregion
+
+            #region addding
             // - add new box if it is time
             counter++;
 
@@ -129,25 +160,23 @@ namespace BoxField
                 boxLeft.Add(anotherBox);
                 box fourthBox = new box(200, 25, 20);
                 boxRight.Add(fourthBox);
-                CollisionBox wowBox = new CollisionBox(25, 25, 20);
-                CollisionBox yikeBox = new CollisionBox(200, 25, 20);
-                colBoxLeft.Add(wowBox);
-                colBoxRight.Add(yikeBox);
+               
                 counter = 0;
             }
-
+            #endregion
 
             Refresh();
         }
 
         private void GameScreen_Paint(object sender, PaintEventArgs e)
         {
-            
+            Pen playerBrush = new Pen(Color.BlanchedAlmond);
             Random randGen = new Random();
             int r = randGen.Next(0, 255);
             int g = randGen.Next(0, 255);
             int blue = randGen.Next(0, 255);
-            SolidBrush boxBrush = new SolidBrush(Color.FromArgb(r,g,blue));
+            // SolidBrush boxBrush = new SolidBrush(Color.FromArgb(r,g,blue));
+            SolidBrush boxBrush = new SolidBrush(Color.GreenYellow);
             // - draw boxes to screen
             for (int i = 0; i < boxLeft.Count(); i++)
             {
@@ -157,6 +186,8 @@ namespace BoxField
             {
                 e.Graphics.FillRectangle(boxBrush, b.x, b.y, b.size, b.size);
             }
+
+            e.Graphics.DrawEllipse(playerBrush, player.x, player.y, player.size, player.size);
         }
     }
 }

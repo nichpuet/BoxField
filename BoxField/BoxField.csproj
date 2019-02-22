@@ -45,7 +45,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Box\box.cs" />
-    <Compile Include="Box\CollisionBox.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
