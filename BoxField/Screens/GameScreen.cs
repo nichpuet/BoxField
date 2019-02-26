@@ -24,7 +24,11 @@ namespace BoxField
        
         box player;
 
-        int counter = 0, counter2 = 0, counter3 = 0;
+        int moveSwitch = 0;
+        bool moveSide = true;
+        int box1X = 25, box2X = 200;
+
+        int counter = 0;
 
         public GameScreen()
         {
@@ -38,13 +42,13 @@ namespace BoxField
         public void OnStart()
         {
             // - set game start values
-            box newBox = new box(25, 25, 20);
-            box thirdBox = new box(200, 25, 20);
+            box newBox = new box(25, 25, 20,0,0,0);
+            box thirdBox = new box(200, 25, 20,0,0,0);
            
             boxLeft.Add(newBox);
             boxRight.Add(thirdBox);
            
-            player = new box(120, this.Height - 75, 25);
+            player = new box(120, this.Height - 75, 25,255,0,0);
         }
 
         private void GameScreen_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
@@ -92,32 +96,6 @@ namespace BoxField
 
             #endregion
 
-            #region sidetoside
-
-            counter2++;
-
-            if (counter2 == 16)
-            {
-                if (counter3%5 == 0)
-                {
-                    foreach(box b in boxLeft.Union(boxRight))
-                    {
-                        b.boxMove("left", 15);
-                    }
-                }
-                else
-                {
-                    foreach(box b in boxLeft.Union(boxRight))
-                    {
-                        b.boxMove("right", 15);
-                    }
-                }
-                counter3++;
-                counter2 = 0;
-            }
-
-            #endregion
-
             #region player movement
             if (leftArrowDown)
             {
@@ -152,15 +130,48 @@ namespace BoxField
             #region addding
             // - add new box if it is time
             counter++;
-
-            if(counter == 8)
+            
+            if (counter == 8)
             {
-               
-                box anotherBox = new box(25, 25, 20);
+                Random randGen = new Random();
+                int r = randGen.Next(0, 255);
+                int g = randGen.Next(0, 255);
+                int blue = randGen.Next(0, 255);
+
+                moveSwitch = randGen.Next(0, 11);
+
+                if (moveSide == false)
+                {
+                    box1X -= 10;
+                    box2X -= 10;
+                    if (box1X <= 25)
+                    {
+                        moveSide = true;
+                    }
+                    if (moveSwitch == counter )
+                    {
+                        moveSide = true;
+                    }
+                }
+                if (moveSide == true)
+                {
+                    box1X += 10;
+                    box2X += 10;
+                    if (box2X >= 475)
+                    {
+                        moveSide = false;
+                    }
+                    if (moveSwitch == counter)
+                    {
+                        moveSide = false;
+                    }
+                }
+
+                box anotherBox = new box(box1X, 25, 20,r,g,blue);
                 boxLeft.Add(anotherBox);
-                box fourthBox = new box(200, 25, 20);
+                box fourthBox = new box(box2X, 25, 20,r,g,blue);
                 boxRight.Add(fourthBox);
-               
+
                 counter = 0;
             }
             #endregion
@@ -170,24 +181,30 @@ namespace BoxField
 
         private void GameScreen_Paint(object sender, PaintEventArgs e)
         {
-            Pen playerBrush = new Pen(Color.BlanchedAlmond);
-            Random randGen = new Random();
-            int r = randGen.Next(0, 255);
-            int g = randGen.Next(0, 255);
-            int blue = randGen.Next(0, 255);
-            // SolidBrush boxBrush = new SolidBrush(Color.FromArgb(r,g,blue));
-            SolidBrush boxBrush = new SolidBrush(Color.GreenYellow);
+
+            int newR,newG,newB;
+
+ 
             // - draw boxes to screen
             for (int i = 0; i < boxLeft.Count(); i++)
             {
+                newR = boxLeft[i].r;
+                newG = boxLeft[i].g;
+                newB = boxLeft[i].blue;
+                SolidBrush boxBrush = new SolidBrush(Color.FromArgb(newR, newG, newB));
                 e.Graphics.FillRectangle(boxBrush, boxLeft[i].x, boxLeft[i].y, boxLeft[i].size, boxLeft[i].size);
             }
-            foreach(box b in boxRight)
+            for (int i = 0; i < boxRight.Count(); i++)
             {
-                e.Graphics.FillRectangle(boxBrush, b.x, b.y, b.size, b.size);
-            }
 
-            e.Graphics.DrawEllipse(playerBrush, player.x, player.y, player.size, player.size);
+                newR = boxRight[i].r;
+                newG = boxRight[i].g;
+                newB = boxRight[i].blue;
+                SolidBrush boxBrush = new SolidBrush(Color.FromArgb(newR, newG, newB));
+                e.Graphics.FillRectangle(boxBrush, boxRight[i].x, boxRight[i].y, boxRight[i].size, boxRight[i].size);
+            }
+            Pen playerPen = new Pen(Color.Maroon);
+            e.Graphics.DrawEllipse(playerPen, player.x, player.y, player.size, player.size);
         }
     }
 }

@@ -9,13 +9,16 @@ namespace BoxField
 {
     class box
     {
-        public int x, y, size;
+        public int x, y, size, r, g, blue;
                  
-        public  box(int _x, int _y, int _size)
+        public  box(int _x, int _y, int _size, int _r, int _g, int _blue)
         {
             x = _x;
             y = _y;
             size = _size;
+            r = _r;
+            g = _g;
+            blue = _blue;
         }
 
         public void boxMove(int u)
